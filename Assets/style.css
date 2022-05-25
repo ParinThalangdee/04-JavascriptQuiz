@@ -9,6 +9,12 @@
   --hue-correct: 145;
 }
 
+h1 {
+  font-size: 3rem;
+  margin-bottom: 100px;
+  color: white;
+}
+
 body {
   --hue: var(--hue-neutral);
   padding: 0;
@@ -19,6 +25,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: hsl(var(--hue), 100%, 20%);
+  flex-direction: column;
 }
 
 body.correct {

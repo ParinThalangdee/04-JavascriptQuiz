@@ -7,6 +7,10 @@ const answerButtonsElement = document.getElementById("answer-buttons");
 let shuffledQuestions, currentQuestionIndex;
 
 startButton.addEventListener('click', startGame);
+nextButton.addEventListener("click", () => {
+  currentQuestionIndex++
+  setNextQuestion()
+})
 
 function startGame() {
   console.log("Started");
@@ -19,7 +23,7 @@ function startGame() {
 
 function setNextQuestion() {
   resetState();
-  showQuestion(shuffledQuestions[currentQuestionIndex])
+  showQuestion(shuffledQuestions[currentQuestionIndex]);
 }
 
 function showQuestion(question) {
@@ -50,14 +54,44 @@ function selectAnswer(e) {
   Array.from(answerButtonElement.children).forEach(button => {
     setStatusClass(button, button.dataset.correct)
   })
-}
-
-const questions = [
-  {
-    question: "What is 2 + 2?",
-    answers: [
-      { text: "4", correct: true },
-      { text: "22", correct: false }
-    ]
+  if (shuffledQuestions.length > currentQuestionIndex + 1) {
+    nextButton.classList.remove("hide");
+  } else {
+    startButton.innerText = "Restart";
+    startButton.classList.remove('hide');
   }
-]
+
+  function setStatusClass(element, correct) {
+    clearStatusClass(element)
+    if (correct) {
+      element.classList.add("correct")
+    } else {
+      element.classList.add("wrong")
+    }
+  }
+
+  function clearStatusClass(element) {
+    element.classList.remove("correct")
+    element.classList.remove('wrong')
+  }
+
+  const questions = [
+    {
+      question: "What is 2 + 2?",
+      answers: [
+        { text: "4", correct: true },
+        { text: "22", correct: false },
+        { text: "11", correct: false },
+        { text: "8", correct: false }
+      ]
+    },
+    {
+      question: "What is 3 + 3?",
+      answers: [
+        { text: "6", correct: true },
+        { text: "22", correct: false },
+        { text: "11", correct: false },
+        { text: "8", correct: false }
+      ]
+    }
+  ]
