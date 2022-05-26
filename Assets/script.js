@@ -1,97 +1,113 @@
-const startButton = document.getElementById("start-btn");
-const nextButton = document.getElementById("next-btn");
-const questionContainerElement = document.getElementById("question-container");
-const questionElement = document.getElementById("question");
-const answerButtonsElement = document.getElementById("answer-buttons");
+//Get Elements
+const startScreen = document.querySelector("#start");
+const startBtn = document.querySelector("#start-btn");
+const infoBox = document.querySelector(".info-box");
+const exitBtn = document.querySelector(".quit");
+const continueBtn = document.querySelector(".restart");
+const quizBox = document.querySelector(".quiz-box");
+const endBox = document.querySelector("#quiz-end");
+const submitBtn = document.querySelector("#save-score");
+const initialsText = document.querySelector("#initials");
+var existing = localStorage.getItem('results');
+existing = existing ? existing.split(',') : [];
+var queCount = 0;
+var counter = 60;
+var score = 0;
 
-let shuffledQuestions, currentQuestionIndex;
+//If Continue Button Clicked
+continueBtn.onclick = () => {
+  infoBox.classList.add("hide");
+  startScreen.classList.remove("hide");
+};
 
-startButton.addEventListener('click', startGame);
-nextButton.addEventListener("click", () => {
-  currentQuestionIndex++
-  setNextQuestion()
-})
+//If Start Button Clicked
+startBtn.onclick = () => {
+  function countdown() {
+    counter--;
+    if (counter === 0) {
+      clearInterval(startCountdown)
+      quizEnd()
+    };
+    let timeRem = document.querySelector("#time-rem");
+    let timeTag = "<span>Time Left: " + counter + "</span>"
+    timeRem.innerHTML = timeTag;
+  };
+  var startCountdown = setInterval(countdown, 1000);
+  startScreen.classList.add("hide");
+  quizBox.classList.remove("hide");
+  showQuestions(queCount)
+};
 
-function startGame() {
-  console.log("Started");
-  startButton.classList.add("hide");
-  shuffledQuestions = questions.sort(() => Math.random() - .5);
-  currentQuestionIndex = 0;
-  questionContainerElement.classList.remove("hide");
-  setNextQuestion();
-}
-
-function setNextQuestion() {
-  resetState();
-  showQuestion(shuffledQuestions[currentQuestionIndex]);
-}
-
-function showQuestion(question) {
-  questionElement.innterText = question.question;
-  question.answers.forEach(answer => {
-    const button = document.createElement('button')
-    button.innerText = answer.text
-    button.classList.add('btn')
-    if (answer.correct) {
-      button.dataset.correct = answer.correct
-    }
-    button.addEventListener('click', selectAnswer);
-    answerButtonsElement.appendChild(button);
-  })
-}
-
-function resetState() {
-  nextButton.classlist.add('hide');
-  while (answerButtonsElement.firstChild) {
-    answerButtonsElement.removeChild(answerButtonsElement.firstChild)
+//Get Questions and Options from Array
+function showQuestions(index) {
+  if (queCount >= 10) {
+    return;
+  }
+  const queText = document.querySelector(".que-text");
+  const optionList = document.querySelector("#choices");
+  let queTag = "<span>" + questions[index].numb + ". " + questions[index].question + "</span>";
+  let optionTag = '<div class="option">' + questions[index].options[0] + '<span></span></div>'
+    + '<div class="option">' + questions[index].options[1] + '<span></span></div>'
+    + '<div class="option">' + questions[index].options[2] + '<span></span></div>'
+    + '<div class="option">' + questions[index].options[3] + '<span></span></div>'
+  queText.innerHTML = queTag;
+  optionList.innerHTML = optionTag;
+  const option = optionList.querySelectorAll(".option");
+  for (let i = 0; i < option.length; i++) {
+    option[i].setAttribute("onclick", "optionSelected(this)");
   }
 }
 
-function selectAnswer(e) {
-  const selectedButton = e.target;
-  const correct = selectedButton.dataset.correct;
-  setStatusClass(document.body, correct);
-  Array.from(answerButtonElement.children).forEach(button => {
-    setStatusClass(button, button.dataset.correct)
-  })
-  if (shuffledQuestions.length > currentQuestionIndex + 1) {
-    nextButton.classList.remove("hide");
+//Show Next Question When Question is answered
+function optionSelected(answer) {
+  if (queCount >= 10) {
+    return;
+  }
+  let userAns = answer.textContent;
+  let correctAns = questions[queCount].answer;
+  if (userAns == correctAns) {
+    console.log("Answer is Correct");
+    const response = document.querySelector("#response");
+    response.innerHTML = '<div id="response"><span>Correct!</span></div>';
+    setTimeout(nextQuestion, 500)
+    score += 1
+
   } else {
-    startButton.innerText = "Restart";
-    startButton.classList.remove('hide');
+    console.log("Answer is Wrong");
+    const response = document.querySelector("#response");
+    response.innerHTML = '<div id="response"><span>Wrong!</span></div>';
+    setTimeout(nextQuestion, 500)
+    counter -= 5
   }
+}
+function nextQuestion() {
+  queCount++;
+  if (queCount == 10) {
 
-  function setStatusClass(element, correct) {
-    clearStatusClass(element)
-    if (correct) {
-      element.classList.add("correct")
-    } else {
-      element.classList.add("wrong")
-    }
+    quizEnd()
+  };
+  showQuestions(queCount);
+  const response = document.querySelector("#response");
+  response.innerHTML = '<div id="response"><span></span></div>';
+}
+
+//End Quiz if All Questions Completed or Timer Runs out
+function quizEnd() {
+  quizBox.classList.add("hide");
+  endBox.classList.remove("hide");
+  const scoreText = document.querySelector(".score");
+  let scoreTag = '<h3 class="score"> Your score was ' + score + ' out of 10!</h3>';
+  scoreText.innerHTML = scoreTag;
+}
+//Submit Initials
+submitBtn.onclick = () => {
+  let initials = initialsText.value;
+  //Store Initials and Score in Local Storage
+  var resultsDataObj = {
+    initials: initials,
+    score: score
   }
-
-  function clearStatusClass(element) {
-    element.classList.remove("correct")
-    element.classList.remove('wrong')
-  }
-
-  const questions = [
-    {
-      question: "What is 2 + 2?",
-      answers: [
-        { text: "4", correct: true },
-        { text: "22", correct: false },
-        { text: "11", correct: false },
-        { text: "8", correct: false }
-      ]
-    },
-    {
-      question: "What is 3 + 3?",
-      answers: [
-        { text: "6", correct: true },
-        { text: "22", correct: false },
-        { text: "11", correct: false },
-        { text: "8", correct: false }
-      ]
-    }
-  ]
+  localStorage.setItem((localStorage.length + 1), JSON.stringify(resultsDataObj));
+  initialsText.value = ""
+  location.reload();
+}
