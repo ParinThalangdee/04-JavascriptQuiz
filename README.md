@@ -1,4 +1,4 @@
-#Javascript Quiz 
+# Javascript Quiz 
 
 Quiz game which features a countdown timer, score counter, and multiple choices. Game also has ability to store player scores locally.
 
