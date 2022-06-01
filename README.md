@@ -4,4 +4,4 @@ Quiz game which features a countdown timer, score counter, and multiple choices.
 
 [Deployed Application Link](https://parinthalangdee.github.io/04-JavascriptQuiz/)
 
-![Module-4-Challenge Screenshot](./assets/images/Module-4-Challenge%20Screenshot.png)
+![Module-4-Challenge Screenshot](assets/images/Module-4-Challenge%20Screenshot.png)
